@@ -1,23 +1,22 @@
 {
-      "name": "Claude Code Dev",
-        "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
-          "features": {
-              "ghcr.io/devcontainers/features/github-cli:1": {}
-                },
-                  "forwardPorts": [3000, 5173, 8080],
-                    "portsAttributes": {
-                        "3000": { "label": "App", "onAutoForward": "notify" },
-                            "5173": { "label": "Vite", "onAutoForward": "notify" },
-                                "8080": { "label": "Alt", "onAutoForward": "notify" }
-                                  },
-                                    "postCreateCommand": "npm install -g @anthropic-ai/claude-code",
-                                      "customizations": {
-                                          "vscode": {
-                                                "extensions": [
-                                                        "dbaeumer.vscode-eslint",
-                                                                "esbenp.prettier-vscode"
-                                                                      ]
-                                                                          }
-                                                                            }
-                                                                            }
+  "name": "Claude Code Dev",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "forwardPorts": [3000, 5173, 8080],
+  "portsAttributes": {
+    "3000": { "label": "App", "onAutoForward": "notify" },
+    "5173": { "label": "Vite", "onAutoForward": "notify" },
+    "8080": { "label": "Alt", "onAutoForward": "notify" }
+  },
+  "postCreateCommand": "npm install -g @anthropic-ai/claude-code",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  }
 }
