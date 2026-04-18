@@ -1,313 +1,450 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta name="theme-color" content="#f5efe4" />
-<title>Lifeight ・ 勇者のステータス</title>
+<meta name="theme-color" content="#0b0e14" />
+<title>LIFEIGHT · HERO</title>
 <link rel="stylesheet" href="style.css" />
 <style>
-  /* 画面固有 */
-  .radar-wrap {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    margin: 4px auto 0;
+  /* ---- density tabs ---- */
+  .segmented { display:inline-flex; border:1px solid var(--border-strong); border-radius:999px; overflow:hidden; }
+  .segmented button {
+    border:none; background:transparent; padding:5px 12px;
+    color:var(--text-mute); font-family:"JetBrains Mono","SF Mono",Consolas,monospace;
+    font-size:10px; letter-spacing:0.2em; text-transform:uppercase; cursor:pointer;
+    transition:background 0.15s, color 0.15s;
   }
-  .radar-wrap svg { width: 100%; height: 100%; display: block; }
+  .segmented button.on { background:var(--accent); color:#0b0e14; font-weight:700; }
 
-  .virtue-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .virtue-row {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 12px;
+  /* ---- hero stats overlay ---- */
+  .hero-stats {
+    position:absolute; bottom:16px; left:0; right:0;
+    display:flex; align-items:flex-end; justify-content:space-between;
+    padding:0 14px; pointer-events:none;
   }
-  .virtue-row .head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 6px;
-  }
-  .virtue-row .kanji {
-    font-size: 18px;
-    letter-spacing: 0.1em;
-  }
-  .virtue-row .code {
-    font-size: 10px;
-    letter-spacing: 0.25em;
-    color: var(--ink-sub);
-  }
-  .virtue-row .val {
-    font-size: 20px;
-    font-weight: 600;
-    font-family: "Helvetica Neue", system-ui, sans-serif;
-    letter-spacing: 0.05em;
-  }
-  .virtue-row .val small {
-    color: var(--ink-mute);
-    font-size: 10px;
-    font-weight: 400;
-    letter-spacing: 0.1em;
-    margin-left: 2px;
-  }
-  .virtue-row .delta {
-    font-size: 10px;
-    color: var(--ink-sub);
-    letter-spacing: 0.1em;
-    margin-top: 4px;
-  }
-  .virtue-row .delta.up { color: var(--v-wis); }
 
-  .tab-switch {
-    display: inline-flex;
-    border: 1px solid var(--border-strong);
-    border-radius: 999px;
-    overflow: hidden;
-    font-size: 11px;
-    letter-spacing: 0.15em;
+  /* ---- radar ---- */
+  .radar-wrap { position:relative; width:100%; aspect-ratio:1/1; margin:4px auto 0; }
+  .radar-wrap svg { width:100%; height:100%; display:block; }
+
+  /* ---- virtue grid 2x4 ---- */
+  .virtue-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .virtue-card {
+    background:var(--surface); border-radius:10px; padding:10px 12px;
+    border:1px solid var(--border);
   }
-  .tab-switch button {
-    border: none;
-    background: transparent;
-    padding: 6px 12px;
-    color: var(--ink-sub);
-    font-family: inherit;
-    cursor: pointer;
+  .virtue-card.c-vrb { border-color:rgba(77,166,255,0.3); }
+  .virtue-card.c-log { border-color:rgba(166,139,255,0.3); }
+  .virtue-card.c-wis { border-color:rgba(74,222,128,0.3); }
+  .virtue-card.c-art { border-color:rgba(255,110,168,0.3); }
+  .virtue-card.c-vit { border-color:rgba(255,90,90,0.3); }
+  .virtue-card.c-val { border-color:rgba(255,159,69,0.3); }
+  .virtue-card.c-wil { border-color:rgba(255,213,74,0.3); }
+  .virtue-card.c-hum { border-color:rgba(77,208,199,0.3); }
+
+  /* ---- equip row ---- */
+  .equip-row {
+    display:flex; align-items:center; gap:10px;
+    padding:9px 12px; background:var(--surface);
+    border:1px solid var(--border); border-radius:10px;
   }
-  .tab-switch button.on {
-    background: var(--ink);
-    color: var(--surface);
+  .equip-row + .equip-row { margin-top:6px; }
+  .equip-slot-id {
+    font-family:"JetBrains Mono","SF Mono",Consolas,monospace;
+    font-size:9px; letter-spacing:0.25em; color:var(--text-mute);
+    text-transform:uppercase; min-width:66px;
+  }
+  .equip-name { font-size:13px; font-weight:500; flex:1; }
+
+  /* ---- scan-once animation ---- */
+  @keyframes scan-once {
+    0%   { transform:translateY(-100%); opacity:0.6; }
+    80%  { opacity:0.3; }
+    100% { transform:translateY(1200%); opacity:0; }
+  }
+  .scan-line {
+    position:fixed; top:0; left:0; width:100%; height:3px;
+    background:linear-gradient(90deg, transparent, var(--accent), transparent);
+    box-shadow:0 0 12px var(--accent-glow);
+    animation:scan-once 1.2s ease-in 0.2s both;
+    pointer-events:none; z-index:100;
+  }
+
+  /* ---- slow-spin decorative ring ---- */
+  @keyframes slow-spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+  .spin-ring {
+    position:absolute; inset:-4px; border-radius:50%;
+    border:1px dashed rgba(95,185,255,0.15);
+    animation:slow-spin 40s linear infinite;
+    pointer-events:none;
   }
 </style>
 </head>
 <body>
+<div class="scan-line" aria-hidden="true"></div>
 <main class="app">
-  <header class="app-header">
+
+  <!-- 1. Top HUD -->
+  <header class="hud-top">
     <div class="brand">
-      勇者
-      <small>STATUS ・ FULL</small>
+      <div class="mark" aria-hidden="true"></div>
+      <span class="name">Lifeight</span>
     </div>
-    <div class="meta">
-      Lv. 14 ・ 総徳 412<br />
-      <span class="muted">成長度 Full</span>
+    <div class="sys">
+      SYS: <span class="ok">LINKED</span><br />
+      HERO_01 · LV.14
     </div>
   </header>
 
-  <!-- 密度切替 -->
-  <div class="row between" style="margin-bottom:10px;">
-    <div class="xsmall muted">UI 濃度</div>
-    <div class="tab-switch">
+  <!-- 2. Density switch -->
+  <div class="row between" style="margin-bottom:12px;">
+    <span class="label">DISPLAY DENSITY</span>
+    <div class="segmented">
       <button class="on">FULL</button>
       <button>MID</button>
       <button>COMPACT</button>
     </div>
   </div>
 
-  <!-- レーダーチャート -->
+  <!-- 3. Hero bust-up frame -->
+  <section class="section" style="margin-top:0;">
+    <div class="hero-frame panel hud" style="aspect-ratio:1/0.72; overflow:visible; position:relative;">
+      <div class="gridlines" aria-hidden="true"></div>
+      <div class="rings" aria-hidden="true"></div>
+      <span class="spin-ring" aria-hidden="true"></span>
+      <div class="corners" aria-hidden="true"></div>
+
+      <!-- HOLO-RENDER tag top-right -->
+      <span class="tag mono" style="font-size:8px; letter-spacing:0.18em; opacity:0.75;">HOLO-RENDER v0.2</span>
+      <!-- CODE: HERO_01 tag bottom-left -->
+      <span class="tag bl mono" style="font-size:8px; letter-spacing:0.18em;">CODE: HERO_01</span>
+
+      <!-- Inline SVG silhouette: head + shoulders, no face -->
+      <svg viewBox="0 0 200 160" style="width:100%; height:100%; display:block; position:absolute; inset:0;"
+           aria-label="Hero silhouette placeholder — future CG art replacement">
+        <defs>
+          <radialGradient id="auraGrad" cx="50%" cy="60%" r="55%">
+            <stop offset="0%" stop-color="#5fb9ff" stop-opacity="0.18" />
+            <stop offset="100%" stop-color="#5fb9ff" stop-opacity="0" />
+          </radialGradient>
+          <radialGradient id="bodyGrad" cx="50%" cy="30%" r="60%">
+            <stop offset="0%" stop-color="#2a3a54" stop-opacity="1" />
+            <stop offset="100%" stop-color="#111824" stop-opacity="1" />
+          </radialGradient>
+          <filter id="blur-sm">
+            <feGaussianBlur stdDeviation="1.5" />
+          </filter>
+        </defs>
+        <!-- aura glow behind figure -->
+        <ellipse cx="100" cy="120" rx="70" ry="55" fill="url(#auraGrad)" />
+        <!-- outer aura ring 1 -->
+        <ellipse cx="100" cy="115" rx="58" ry="42" fill="none"
+                 stroke="rgba(95,185,255,0.12)" stroke-width="1" />
+        <!-- outer aura ring 2 -->
+        <ellipse cx="100" cy="115" rx="74" ry="54" fill="none"
+                 stroke="rgba(95,185,255,0.06)" stroke-width="1" />
+        <!-- torso / body silhouette -->
+        <path d="M55 160 Q60 118 72 110 Q80 105 100 104 Q120 105 128 110 Q140 118 145 160 Z"
+              fill="url(#bodyGrad)" />
+        <!-- neck -->
+        <rect x="92" y="72" width="16" height="18" rx="6" fill="url(#bodyGrad)" />
+        <!-- head silhouette (no face) -->
+        <ellipse cx="100" cy="60" rx="22" ry="26" fill="url(#bodyGrad)" />
+        <!-- subtle shoulder cape glow edge -->
+        <path d="M55 160 Q60 118 72 110 Q80 105 100 104 Q120 105 128 110 Q140 118 145 160"
+              fill="none" stroke="rgba(95,185,255,0.25)" stroke-width="0.8" />
+        <!-- head glow rim -->
+        <ellipse cx="100" cy="60" rx="23" ry="27" fill="none"
+                 stroke="rgba(95,185,255,0.2)" stroke-width="0.8" />
+      </svg>
+
+      <!-- Level + total virtue overlay at bottom -->
+      <div class="hero-stats">
+        <div>
+          <div class="label" style="font-size:8px;">LEVEL</div>
+          <div class="mono display" style="font-size:28px; color:var(--accent); line-height:1; text-shadow:0 0 16px var(--accent-glow);">14</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="label" style="font-size:8px;">TOTAL VIRTUE</div>
+          <div class="mono display" style="font-size:28px; color:var(--v-wil); line-height:1; text-shadow:0 0 16px rgba(255,213,74,0.5);">412</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Eight-virtue radar -->
   <section class="section">
-    <div class="card" style="padding:18px 14px 10px;">
+    <h2 class="section-title">Virtue Radar <span class="jp">八徳分布</span></h2>
+    <div class="panel hud">
       <div class="radar-wrap">
-        <!-- 八徳レーダー : 上 = 文 から時計回り -->
-        <svg viewBox="-160 -160 320 320" aria-label="八徳レーダーチャート">
+        <svg viewBox="-160 -160 320 320" aria-label="Eight-virtue radar chart">
           <defs>
-            <radialGradient id="radarFill" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stop-color="#c8a86b" stop-opacity="0.35" />
-              <stop offset="100%" stop-color="#8b6f3f" stop-opacity="0.18" />
-            </radialGradient>
+            <!-- axis guides -->
           </defs>
 
-          <!-- 同心リング : 25 / 50 / 75 / 100 -->
-          <g fill="none" stroke="#d8cdbb" stroke-width="1">
+          <!-- concentric rings 25/50/75/100 (r*1.5 = 37.5/75/112.5/150) -->
+          <g fill="none" stroke="rgba(148,168,200,0.1)" stroke-width="1">
             <polygon points="0,-37.5 26.52,-26.52 37.5,0 26.52,26.52 0,37.5 -26.52,26.52 -37.5,0 -26.52,-26.52" />
             <polygon points="0,-75 53.03,-53.03 75,0 53.03,53.03 0,75 -53.03,53.03 -75,0 -53.03,-53.03" />
             <polygon points="0,-112.5 79.55,-79.55 112.5,0 79.55,79.55 0,112.5 -79.55,79.55 -112.5,0 -79.55,-79.55" />
           </g>
-          <!-- 絶対上限 : 外枠 -->
-          <polygon
-            points="0,-150 106.07,-106.07 150,0 106.07,106.07 0,150 -106.07,106.07 -150,0 -106.07,-106.07"
-            fill="none" stroke="#b8a98d" stroke-width="1.2" stroke-dasharray="2 3" />
 
-          <!-- 伸びしろ : 各徳 +10 を想定 -->
-          <!-- 文70 数55 観80 芸60 体50 勇45 志85 仁65 -->
-          <polygon
-            points="0,-105 58.36,-58.36 120,0 63.67,63.67 0,75 -47.73,47.73 -82.5,0 -45.96,-45.96"
-            fill="none" stroke="#a89d8a" stroke-width="1" stroke-dasharray="4 3" opacity="0.7" />
-
-          <!-- 現在値 : 文60 数45 観70 芸50 体40 勇35 志75 仁55 -->
-          <polygon
-            points="0,-90 47.73,-47.73 105,0 53.03,53.03 0,60 -37.12,37.12 -72.5,0 -38.89,-38.89"
-            fill="url(#radarFill)" stroke="#8b6f3f" stroke-width="1.5" stroke-linejoin="round" />
-
-          <!-- 軸線 -->
-          <g stroke="#b8a98d" stroke-width="0.8" opacity="0.6">
-            <line x1="0" y1="0" x2="0"    y2="-150" />
-            <line x1="0" y1="0" x2="106.07" y2="-106.07" />
-            <line x1="0" y1="0" x2="150"  y2="0" />
-            <line x1="0" y1="0" x2="106.07" y2="106.07" />
-            <line x1="0" y1="0" x2="0"    y2="150" />
+          <!-- axis lines -->
+          <g stroke="rgba(148,168,200,0.08)" stroke-width="1">
+            <line x1="0" y1="0" x2="0"      y2="-150" />
+            <line x1="0" y1="0" x2="106.07"  y2="-106.07" />
+            <line x1="0" y1="0" x2="150"     y2="0" />
+            <line x1="0" y1="0" x2="106.07"  y2="106.07" />
+            <line x1="0" y1="0" x2="0"       y2="150" />
             <line x1="0" y1="0" x2="-106.07" y2="106.07" />
-            <line x1="0" y1="0" x2="-150" y2="0" />
+            <line x1="0" y1="0" x2="-150"    y2="0" />
             <line x1="0" y1="0" x2="-106.07" y2="-106.07" />
           </g>
 
-          <!-- 頂点ドット -->
-          <g>
-            <circle cx="0"      cy="-90"   r="3.5" fill="#5a7fb8" />
-            <circle cx="47.73"  cy="-47.73" r="3.5" fill="#7a5a9c" />
-            <circle cx="105"    cy="0"     r="3.5" fill="#6b8e5c" />
-            <circle cx="53.03"  cy="53.03" r="3.5" fill="#c77a8a" />
-            <circle cx="0"      cy="60"    r="3.5" fill="#c56a55" />
-            <circle cx="-37.12" cy="37.12" r="3.5" fill="#d89655" />
-            <circle cx="-72.5"  cy="0"     r="3.5" fill="#b8964b" />
-            <circle cx="-38.89" cy="-38.89" r="3.5" fill="#5a9c94" />
-          </g>
+          <!-- absolute ceiling r=150 (dashed outer ring) -->
+          <polygon
+            points="0,-150 106.07,-106.07 150,0 106.07,106.07 0,150 -106.07,106.07 -150,0 -106.07,-106.07"
+            fill="none" stroke="rgba(148,168,200,0.25)" stroke-width="1" stroke-dasharray="2 3" />
 
-          <!-- ラベル -->
-          <g font-family="Hiragino Mincho ProN, Yu Mincho, serif" font-size="15" fill="#2a2520" text-anchor="middle">
-            <text x="0"       y="-160">文</text>
-            <text x="120"    y="-112">数</text>
-            <text x="166"     y="5">観</text>
-            <text x="120"    y="126">芸</text>
-            <text x="0"       y="168">体</text>
-            <text x="-120"   y="126">勇</text>
-            <text x="-166"    y="5">志</text>
-            <text x="-120"   y="-112">仁</text>
-          </g>
+          <!-- stretch layer (+10 each value) -->
+          <!-- VRB70:(0,-105) LOG55:(58.34,-58.34) WIS80:(120,0) ART60:(63.64,63.64) VIT50:(0,75) VAL45:(-47.73,47.73) WIL85:(-127.5,0) HUM65:(-68.94,-68.94) -->
+          <polygon
+            points="0,-105 58.34,-58.34 120,0 63.64,63.64 0,75 -47.73,47.73 -127.5,0 -68.94,-68.94"
+            fill="none" stroke="rgba(95,185,255,0.22)" stroke-width="1" stroke-dasharray="4 3" />
+
+          <!-- current values fill -->
+          <!-- VRB60:(0,-90) LOG45:(47.73,-47.73) WIS70:(105,0) ART50:(53.03,53.03) VIT40:(0,60) VAL35:(-37.12,37.12) WIL75:(-112.5,0) HUM55:(-58.34,-58.34) -->
+          <polygon
+            points="0,-90 47.73,-47.73 105,0 53.03,53.03 0,60 -37.12,37.12 -112.5,0 -58.34,-58.34"
+            fill="rgba(95,185,255,0.25)" stroke="#5fb9ff" stroke-width="1.5" stroke-linejoin="round" />
+
+          <!-- vertex dots (each virtue color) -->
+          <!-- VRB -->
+          <circle cx="0"      cy="-90"    r="3.5" fill="var(--v-vrb)" filter="url(#vdot)" />
+          <!-- LOG -->
+          <circle cx="47.73"  cy="-47.73" r="3.5" fill="var(--v-log)" />
+          <!-- WIS -->
+          <circle cx="105"    cy="0"      r="3.5" fill="var(--v-wis)" />
+          <!-- ART -->
+          <circle cx="53.03"  cy="53.03"  r="3.5" fill="var(--v-art)" />
+          <!-- VIT -->
+          <circle cx="0"      cy="60"     r="3.5" fill="var(--v-vit)" />
+          <!-- VAL -->
+          <circle cx="-37.12" cy="37.12"  r="3.5" fill="var(--v-val)" />
+          <!-- WIL -->
+          <circle cx="-112.5" cy="0"      r="3.5" fill="var(--v-wil)" />
+          <!-- HUM -->
+          <circle cx="-58.34" cy="-58.34" r="3.5" fill="var(--v-hum)" />
+
+          <!-- labels: English code primary, kanji sub -->
+          <!-- VRB top -->
+          <text x="0" y="-156" text-anchor="middle" font-family="'JetBrains Mono','SF Mono',Consolas,monospace" font-size="13" fill="var(--v-vrb)">VRB</text>
+          <text x="0" y="-143" text-anchor="middle" font-size="9" fill="var(--v-vrb)" opacity="0.5">文</text>
+          <!-- LOG top-right -->
+          <text x="116" y="-108" text-anchor="start" font-family="'JetBrains Mono','SF Mono',Consolas,monospace" font-size="13" fill="var(--v-log)">LOG</text>
+          <text x="122" y="-96" text-anchor="start" font-size="9" fill="var(--v-log)" opacity="0.5">数</text>
+          <!-- WIS right -->
+          <text x="155" y="5" text-anchor="start" font-family="'JetBrains Mono','SF Mono',Consolas,monospace" font-size="13" fill="var(--v-wis)">WIS</text>
+          <text x="160" y="17" text-anchor="start" font-size="9" fill="var(--v-wis)" opacity="0.5">観</text>
+          <!-- ART bottom-right -->
+          <text x="116" y="120" text-anchor="start" font-family="'JetBrains Mono','SF Mono',Consolas,monospace" font-size="13" fill="var(--v-art)">ART</text>
+          <text x="122" y="132" text-anchor="start" font-size="9" fill="var(--v-art)" opacity="0.5">芸</text>
+          <!-- VIT bottom -->
+          <text x="0" y="162" text-anchor="middle" font-family="'JetBrains Mono','SF Mono',Consolas,monospace" font-size="13" fill="var(--v-vit)">VIT</text>
+          <text x="0" y="149" text-anchor="middle" font-size="9" fill="var(--v-vit)" opacity="0.5">体</text>
+          <!-- VAL bottom-left -->
+          <text x="-116" y="120" text-anchor="end" font-family="'JetBrains Mono','SF Mono',Consolas,monospace" font-size="13" fill="var(--v-val)">VAL</text>
+          <text x="-122" y="132" text-anchor="end" font-size="9" fill="var(--v-val)" opacity="0.5">勇</text>
+          <!-- WIL left -->
+          <text x="-155" y="5" text-anchor="end" font-family="'JetBrains Mono','SF Mono',Consolas,monospace" font-size="13" fill="var(--v-wil)">WIL</text>
+          <text x="-160" y="17" text-anchor="end" font-size="9" fill="var(--v-wil)" opacity="0.5">志</text>
+          <!-- HUM top-left -->
+          <text x="-116" y="-108" text-anchor="end" font-family="'JetBrains Mono','SF Mono',Consolas,monospace" font-size="13" fill="var(--v-hum)">HUM</text>
+          <text x="-122" y="-96" text-anchor="end" font-size="9" fill="var(--v-hum)" opacity="0.5">仁</text>
         </svg>
       </div>
 
-      <!-- 凡例 -->
-      <div class="row" style="justify-content:center; gap:14px; margin-top:4px; flex-wrap:wrap;">
-        <span class="xsmall muted"><span style="display:inline-block; width:10px; height:10px; background:#8b6f3f; border-radius:2px; vertical-align:middle; margin-right:4px;"></span>現在値</span>
-        <span class="xsmall muted"><span style="display:inline-block; width:10px; height:1px; border-top:1px dashed #a89d8a; vertical-align:middle; margin-right:4px;"></span>伸びしろ</span>
-        <span class="xsmall muted"><span style="display:inline-block; width:10px; height:1px; border-top:1px dashed #b8a98d; vertical-align:middle; margin-right:4px;"></span>絶対上限</span>
+      <!-- legend -->
+      <div class="row" style="justify-content:center; gap:14px; margin-top:6px; flex-wrap:wrap;">
+        <span class="label" style="display:flex; align-items:center; gap:5px;">
+          <span style="display:inline-block; width:10px; height:2px; background:var(--accent); border-radius:1px;"></span>CURRENT
+        </span>
+        <span class="label" style="display:flex; align-items:center; gap:5px;">
+          <span style="display:inline-block; width:10px; height:0; border-top:1px dashed rgba(95,185,255,0.5);"></span>STRETCH
+        </span>
+        <span class="label" style="display:flex; align-items:center; gap:5px;">
+          <span style="display:inline-block; width:10px; height:0; border-top:1px dashed rgba(148,168,200,0.4);"></span>MAX
+        </span>
       </div>
     </div>
   </section>
 
-  <!-- 八徳 詳細 -->
+  <!-- 5. Eight-virtue detail cards 2x4 -->
   <section class="section">
-    <h2 class="section-title">八徳 ・ 詳細</h2>
-    <div class="virtue-list">
-      <div class="virtue-row">
-        <div class="head">
-          <span class="kanji" style="color:var(--v-vrb);">文</span>
-          <span class="code">VRB</span>
+    <h2 class="section-title">Virtue Detail <span class="jp">八徳詳細</span></h2>
+    <div class="virtue-grid">
+
+      <!-- VRB -->
+      <div class="virtue-card c-vrb">
+        <div class="display" style="font-size:17px; color:var(--v-vrb); letter-spacing:0.12em;">VRB</div>
+        <div style="font-size:9px; color:var(--v-vrb); opacity:0.4; margin-top:1px; letter-spacing:0.2em;">文</div>
+        <div class="mono" style="font-size:24px; line-height:1.1; margin-top:6px;">60</div>
+        <div style="font-size:10px; color:var(--text-sub); margin-top:4px; font-family:'JetBrains Mono',monospace; letter-spacing:0.1em;">
+          <span style="color:var(--v-vrb);">+6 MO</span> &nbsp; MAX 70
         </div>
-        <div class="val">60<small>/100</small></div>
-        <div class="delta up">この月 +6 ・ 伸びしろ 70</div>
       </div>
-      <div class="virtue-row">
-        <div class="head">
-          <span class="kanji" style="color:var(--v-log);">数</span>
-          <span class="code">LOG</span>
+
+      <!-- LOG -->
+      <div class="virtue-card c-log">
+        <div class="display" style="font-size:17px; color:var(--v-log); letter-spacing:0.12em;">LOG</div>
+        <div style="font-size:9px; color:var(--v-log); opacity:0.4; margin-top:1px; letter-spacing:0.2em;">数</div>
+        <div class="mono" style="font-size:24px; line-height:1.1; margin-top:6px;">45</div>
+        <div style="font-size:10px; color:var(--text-sub); margin-top:4px; font-family:'JetBrains Mono',monospace; letter-spacing:0.1em;">
+          <span style="color:var(--v-log);">+1 MO</span> &nbsp; MAX 55
         </div>
-        <div class="val">45<small>/100</small></div>
-        <div class="delta">この月 +1 ・ 伸びしろ 55</div>
       </div>
-      <div class="virtue-row">
-        <div class="head">
-          <span class="kanji" style="color:var(--v-wis);">観</span>
-          <span class="code">WIS</span>
+
+      <!-- WIS -->
+      <div class="virtue-card c-wis">
+        <div class="display" style="font-size:17px; color:var(--v-wis); letter-spacing:0.12em;">WIS</div>
+        <div style="font-size:9px; color:var(--v-wis); opacity:0.4; margin-top:1px; letter-spacing:0.2em;">観</div>
+        <div class="mono" style="font-size:24px; line-height:1.1; margin-top:6px;">70</div>
+        <div style="font-size:10px; color:var(--text-sub); margin-top:4px; font-family:'JetBrains Mono',monospace; letter-spacing:0.1em;">
+          <span style="color:var(--v-wis);">+9 MO</span> &nbsp; MAX 80
         </div>
-        <div class="val">70<small>/100</small></div>
-        <div class="delta up">この月 +9 ・ 伸びしろ 80</div>
       </div>
-      <div class="virtue-row">
-        <div class="head">
-          <span class="kanji" style="color:var(--v-art);">芸</span>
-          <span class="code">ART</span>
+
+      <!-- ART -->
+      <div class="virtue-card c-art">
+        <div class="display" style="font-size:17px; color:var(--v-art); letter-spacing:0.12em;">ART</div>
+        <div style="font-size:9px; color:var(--v-art); opacity:0.4; margin-top:1px; letter-spacing:0.2em;">芸</div>
+        <div class="mono" style="font-size:24px; line-height:1.1; margin-top:6px;">50</div>
+        <div style="font-size:10px; color:var(--text-sub); margin-top:4px; font-family:'JetBrains Mono',monospace; letter-spacing:0.1em;">
+          <span style="color:var(--v-art);">+2 MO</span> &nbsp; MAX 60
         </div>
-        <div class="val">50<small>/100</small></div>
-        <div class="delta">この月 +2 ・ 伸びしろ 60</div>
       </div>
-      <div class="virtue-row">
-        <div class="head">
-          <span class="kanji" style="color:var(--v-vit);">体</span>
-          <span class="code">VIT</span>
+
+      <!-- VIT -->
+      <div class="virtue-card c-vit">
+        <div class="display" style="font-size:17px; color:var(--v-vit); letter-spacing:0.12em;">VIT</div>
+        <div style="font-size:9px; color:var(--v-vit); opacity:0.4; margin-top:1px; letter-spacing:0.2em;">体</div>
+        <div class="mono" style="font-size:24px; line-height:1.1; margin-top:6px;">40</div>
+        <div style="font-size:10px; color:var(--text-sub); margin-top:4px; font-family:'JetBrains Mono',monospace; letter-spacing:0.1em;">
+          <span style="color:var(--text-mute);">+0 MO</span> &nbsp; MAX 50
         </div>
-        <div class="val">40<small>/100</small></div>
-        <div class="delta">この月 +0 ・ 伸びしろ 50</div>
       </div>
-      <div class="virtue-row">
-        <div class="head">
-          <span class="kanji" style="color:var(--v-val);">勇</span>
-          <span class="code">VAL</span>
+
+      <!-- VAL -->
+      <div class="virtue-card c-val">
+        <div class="display" style="font-size:17px; color:var(--v-val); letter-spacing:0.12em;">VAL</div>
+        <div style="font-size:9px; color:var(--v-val); opacity:0.4; margin-top:1px; letter-spacing:0.2em;">勇</div>
+        <div class="mono" style="font-size:24px; line-height:1.1; margin-top:6px;">35</div>
+        <div style="font-size:10px; color:var(--text-sub); margin-top:4px; font-family:'JetBrains Mono',monospace; letter-spacing:0.1em;">
+          <span style="color:var(--v-val);">+3 MO</span> &nbsp; MAX 45
         </div>
-        <div class="val">35<small>/100</small></div>
-        <div class="delta">この月 +3 ・ 伸びしろ 45</div>
       </div>
-      <div class="virtue-row">
-        <div class="head">
-          <span class="kanji" style="color:var(--v-wil);">志</span>
-          <span class="code">WIL</span>
+
+      <!-- WIL -->
+      <div class="virtue-card c-wil">
+        <div class="display" style="font-size:17px; color:var(--v-wil); letter-spacing:0.12em;">WIL</div>
+        <div style="font-size:9px; color:var(--v-wil); opacity:0.4; margin-top:1px; letter-spacing:0.2em;">志</div>
+        <div class="mono" style="font-size:24px; line-height:1.1; margin-top:6px;">75</div>
+        <div style="font-size:10px; color:var(--text-sub); margin-top:4px; font-family:'JetBrains Mono',monospace; letter-spacing:0.1em;">
+          <span style="color:var(--v-wil);">+12 MO</span> &nbsp; MAX 85
         </div>
-        <div class="val">75<small>/100</small></div>
-        <div class="delta up">この月 +12 ・ 伸びしろ 85</div>
       </div>
-      <div class="virtue-row">
-        <div class="head">
-          <span class="kanji" style="color:var(--v-hum);">仁</span>
-          <span class="code">HUM</span>
+
+      <!-- HUM -->
+      <div class="virtue-card c-hum">
+        <div class="display" style="font-size:17px; color:var(--v-hum); letter-spacing:0.12em;">HUM</div>
+        <div style="font-size:9px; color:var(--v-hum); opacity:0.4; margin-top:1px; letter-spacing:0.2em;">仁</div>
+        <div class="mono" style="font-size:24px; line-height:1.1; margin-top:6px;">55</div>
+        <div style="font-size:10px; color:var(--text-sub); margin-top:4px; font-family:'JetBrains Mono',monospace; letter-spacing:0.1em;">
+          <span style="color:var(--v-hum);">+4 MO</span> &nbsp; MAX 65
         </div>
-        <div class="val">55<small>/100</small></div>
-        <div class="delta up">この月 +4 ・ 伸びしろ 65</div>
       </div>
+
     </div>
   </section>
 
-  <!-- 勇者の姿 -->
+  <!-- 6. Equipment slots -->
   <section class="section">
-    <h2 class="section-title">勇者の姿</h2>
-    <div class="card">
-      <div style="display:grid; grid-template-columns: 120px 1fr; gap:14px; align-items:center;">
-        <div style="aspect-ratio:1/1; border-radius:12px; background:linear-gradient(180deg,#efe5d0,#e2d4b5); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:56px;">
-          <span aria-hidden="true">𓀀</span>
-        </div>
-        <div>
-          <div class="xsmall muted">名：コウヨウ</div>
-          <div class="mt-8 xsmall muted">装備スロット 5 / 5</div>
-          <ul style="list-style:none; padding:0; margin:8px 0 0; font-size:12px; letter-spacing:0.05em;">
-            <li>頭 ・ 継続の花冠</li>
-            <li>衣 ・ 苔のマント</li>
-            <li>武 ・ 整えの箒</li>
-            <li>相棒 ・ モンステラ</li>
-            <li>背 ・ 整然とした書斎</li>
-          </ul>
-        </div>
+    <h2 class="section-title">Equipment <span class="jp">装備スロット</span></h2>
+    <div class="panel hud">
+
+      <div class="equip-row">
+        <span class="equip-slot-id">HEAD</span>
+        <span class="equip-name">Focus Crown</span>
+        <span class="vchip wil"><span class="dot"></span>WIL</span>
       </div>
+
+      <div class="equip-row">
+        <span class="equip-slot-id">BODY</span>
+        <span class="equip-name">Moss Cloak</span>
+        <span class="vchip wis"><span class="dot"></span>WIS</span>
+      </div>
+
+      <div class="equip-row">
+        <span class="equip-slot-id">WEAPON</span>
+        <span class="equip-name">Order Broom</span>
+        <span class="vchip wil"><span class="dot"></span>WIL</span>
+      </div>
+
+      <div class="equip-row">
+        <span class="equip-slot-id">COMPANION</span>
+        <span class="equip-name">Monstera</span>
+        <span class="vchip hum"><span class="dot"></span>HUM</span>
+      </div>
+
+      <div class="equip-row">
+        <span class="equip-slot-id">SCENE</span>
+        <span class="equip-name">Ordered Study</span>
+        <span class="vchip wil"><span class="dot"></span>WIL</span>
+      </div>
+
     </div>
   </section>
 
-  <!-- 昨日の自分 -->
+  <!-- 7. VS. 1 MONTH AGO -->
   <section class="section">
-    <h2 class="section-title">昨日の自分と比べて</h2>
-    <div class="card">
-      <p class="small" style="margin:0;">
-        1ヶ月前のレーダーと比べて、<strong style="color:var(--v-wil);">志</strong>・<strong style="color:var(--v-wis);">観</strong> が顕著に伸びた。<br />
-        <span class="muted">片付け編を開いたことが、効いています。</span>
-      </p>
-      <div class="row mt-12" style="gap:6px;">
-        <span class="virtue-chip vc-wil"><span class="dot"></span>志 +12</span>
-        <span class="virtue-chip vc-wis"><span class="dot"></span>観 +9</span>
-        <span class="virtue-chip vc-vrb"><span class="dot"></span>文 +6</span>
+    <h2 class="section-title">Growth Delta <span class="jp">1ヶ月比較</span></h2>
+    <div class="panel glow-top">
+      <div class="label" style="margin-bottom:10px; color:var(--accent);">VS. 1 MONTH AGO</div>
+      <div class="row wrap" style="gap:8px;">
+        <span class="vchip wil"><span class="dot"></span>WIL +12</span>
+        <span class="vchip wis"><span class="dot"></span>WIS +9</span>
+        <span class="vchip vrb"><span class="dot"></span>VRB +6</span>
       </div>
     </div>
   </section>
 
-  <div class="whisper mt-16">
-    「他人の勇者は、見なくていい。<br />
-    　見るべきは、昨日の君だ。」
+  <!-- 8. AI Whisper -->
+  <div class="whisper mt-16" style="margin-bottom:8px;">
+    The only hero you measure against<br />
+    is the one you were yesterday.
   </div>
 
 </main>
 
-<nav class="bottom-nav">
-  <a href="index.html"><span class="icon">書</span>今日</a>
-  <a href="status.html" class="active"><span class="icon">徳</span>勇者</a>
-  <a href="bookshelf.html"><span class="icon">棚</span>本棚</a>
-  <a href="#"><span class="icon">∞</span>軌跡</a>
+<!-- 9. Bottom nav -->
+<nav class="hud-nav" aria-label="Main navigation">
+  <a href="index.html">
+    <span class="icon" aria-hidden="true">◆</span>
+    HOME
+  </a>
+  <a href="status.html" class="active" aria-current="page">
+    <span class="icon" aria-hidden="true">⬢</span>
+    HERO
+  </a>
+  <a href="bookshelf.html">
+    <span class="icon" aria-hidden="true">▣</span>
+    ARCHIVE
+  </a>
+  <a href="cleanup.html">
+    <span class="icon" aria-hidden="true">◉</span>
+    QUEST
+  </a>
 </nav>
 </body>
 </html>
