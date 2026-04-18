@@ -7,78 +7,30 @@
 <title>LIFEIGHT · HERO</title>
 <link rel="stylesheet" href="style.css" />
 <style>
-  /* ---- density tabs ---- */
-  .segmented { display:inline-flex; border:1px solid var(--border-strong); border-radius:999px; overflow:hidden; }
-  .segmented button {
-    border:none; background:transparent; padding:5px 12px;
-    color:var(--text-mute); font-family:"JetBrains Mono","SF Mono",Consolas,monospace;
-    font-size:10px; letter-spacing:0.2em; text-transform:uppercase; cursor:pointer;
-    transition:background 0.15s, color 0.15s;
-  }
-  .segmented button.on { background:var(--accent); color:#0b0e14; font-weight:700; }
-
-  /* ---- hero stats overlay ---- */
-  .hero-stats {
-    position:absolute; bottom:16px; left:0; right:0;
-    display:flex; align-items:flex-end; justify-content:space-between;
-    padding:0 14px; pointer-events:none;
-  }
-
-  /* ---- radar ---- */
-  .radar-wrap { position:relative; width:100%; aspect-ratio:1/1; margin:4px auto 0; }
-  .radar-wrap svg { width:100%; height:100%; display:block; }
-
-  /* ---- virtue grid 2x4 ---- */
-  .virtue-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-  .virtue-card {
-    background:var(--surface); border-radius:10px; padding:10px 12px;
-    border:1px solid var(--border);
-  }
-  .virtue-card.c-vrb { border-color:rgba(77,166,255,0.3); }
-  .virtue-card.c-log { border-color:rgba(166,139,255,0.3); }
-  .virtue-card.c-wis { border-color:rgba(74,222,128,0.3); }
-  .virtue-card.c-art { border-color:rgba(255,110,168,0.3); }
-  .virtue-card.c-vit { border-color:rgba(255,90,90,0.3); }
-  .virtue-card.c-val { border-color:rgba(255,159,69,0.3); }
-  .virtue-card.c-wil { border-color:rgba(255,213,74,0.3); }
-  .virtue-card.c-hum { border-color:rgba(77,208,199,0.3); }
-
-  /* ---- equip row ---- */
-  .equip-row {
-    display:flex; align-items:center; gap:10px;
-    padding:9px 12px; background:var(--surface);
-    border:1px solid var(--border); border-radius:10px;
-  }
-  .equip-row + .equip-row { margin-top:6px; }
-  .equip-slot-id {
-    font-family:"JetBrains Mono","SF Mono",Consolas,monospace;
-    font-size:9px; letter-spacing:0.25em; color:var(--text-mute);
-    text-transform:uppercase; min-width:66px;
-  }
-  .equip-name { font-size:13px; font-weight:500; flex:1; }
-
-  /* ---- scan-once animation ---- */
-  @keyframes scan-once {
-    0%   { transform:translateY(-100%); opacity:0.6; }
-    80%  { opacity:0.3; }
-    100% { transform:translateY(1200%); opacity:0; }
-  }
-  .scan-line {
-    position:fixed; top:0; left:0; width:100%; height:3px;
-    background:linear-gradient(90deg, transparent, var(--accent), transparent);
-    box-shadow:0 0 12px var(--accent-glow);
-    animation:scan-once 1.2s ease-in 0.2s both;
-    pointer-events:none; z-index:100;
-  }
-
-  /* ---- slow-spin decorative ring ---- */
-  @keyframes slow-spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-  .spin-ring {
-    position:absolute; inset:-4px; border-radius:50%;
-    border:1px dashed rgba(95,185,255,0.15);
-    animation:slow-spin 40s linear infinite;
-    pointer-events:none;
-  }
+  .segmented{display:inline-flex;border:1px solid var(--border-strong);border-radius:999px;overflow:hidden;}
+  .segmented button{border:none;background:transparent;padding:5px 12px;color:var(--text-mute);font-family:"JetBrains Mono","SF Mono",Consolas,monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;transition:background 0.15s,color 0.15s;}
+  .segmented button.on{background:var(--accent);color:#0b0e14;font-weight:700;}
+  .hero-stats{position:absolute;bottom:16px;left:0;right:0;display:flex;align-items:flex-end;justify-content:space-between;padding:0 14px;pointer-events:none;}
+  .radar-wrap{position:relative;width:100%;aspect-ratio:1/1;margin:4px auto 0;}
+  .radar-wrap svg{width:100%;height:100%;display:block;}
+  .virtue-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .virtue-card{background:var(--surface);border-radius:10px;padding:10px 12px;border:1px solid var(--border);}
+  .virtue-card.c-vrb{border-color:rgba(77,166,255,0.3);}
+  .virtue-card.c-log{border-color:rgba(166,139,255,0.3);}
+  .virtue-card.c-wis{border-color:rgba(74,222,128,0.3);}
+  .virtue-card.c-art{border-color:rgba(255,110,168,0.3);}
+  .virtue-card.c-vit{border-color:rgba(255,90,90,0.3);}
+  .virtue-card.c-val{border-color:rgba(255,159,69,0.3);}
+  .virtue-card.c-wil{border-color:rgba(255,213,74,0.3);}
+  .virtue-card.c-hum{border-color:rgba(77,208,199,0.3);}
+  .equip-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;}
+  .equip-row+.equip-row{margin-top:6px;}
+  .equip-slot-id{font-family:"JetBrains Mono","SF Mono",Consolas,monospace;font-size:9px;letter-spacing:0.25em;color:var(--text-mute);text-transform:uppercase;min-width:66px;}
+  .equip-name{font-size:13px;font-weight:500;flex:1;}
+  @keyframes scan-once{0%{transform:translateY(-100%);opacity:0.6;}80%{opacity:0.3;}100%{transform:translateY(1200%);opacity:0;}}
+  .scan-line{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--accent),transparent);box-shadow:0 0 12px var(--accent-glow);animation:scan-once 1.2s ease-in 0.2s both;pointer-events:none;z-index:100;}
+  @keyframes slow-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  .spin-ring{position:absolute;inset:-4px;border-radius:50%;border:1px dashed rgba(95,185,255,0.15);animation:slow-spin 40s linear infinite;pointer-events:none;}
 </style>
 </head>
 <body>
@@ -89,7 +41,7 @@
   <header class="hud-top">
     <div class="brand">
       <div class="mark" aria-hidden="true"></div>
-      <span class="name">Lifeight</span>
+      <span class="name">LIFEIGHT</span>
     </div>
     <div class="sys">
       SYS: <span class="ok">LINKED</span><br />
@@ -132,18 +84,12 @@
             <stop offset="0%" stop-color="#2a3a54" stop-opacity="1" />
             <stop offset="100%" stop-color="#111824" stop-opacity="1" />
           </radialGradient>
-          <filter id="blur-sm">
-            <feGaussianBlur stdDeviation="1.5" />
-          </filter>
         </defs>
         <!-- aura glow behind figure -->
         <ellipse cx="100" cy="120" rx="70" ry="55" fill="url(#auraGrad)" />
-        <!-- outer aura ring 1 -->
-        <ellipse cx="100" cy="115" rx="58" ry="42" fill="none"
-                 stroke="rgba(95,185,255,0.12)" stroke-width="1" />
-        <!-- outer aura ring 2 -->
-        <ellipse cx="100" cy="115" rx="74" ry="54" fill="none"
-                 stroke="rgba(95,185,255,0.06)" stroke-width="1" />
+        <!-- outer aura rings -->
+        <ellipse cx="100" cy="115" rx="58" ry="42" fill="none" stroke="rgba(95,185,255,0.12)" stroke-width="1" />
+        <ellipse cx="100" cy="115" rx="74" ry="54" fill="none" stroke="rgba(95,185,255,0.06)" stroke-width="1" />
         <!-- torso / body silhouette -->
         <path d="M55 160 Q60 118 72 110 Q80 105 100 104 Q120 105 128 110 Q140 118 145 160 Z"
               fill="url(#bodyGrad)" />
@@ -151,7 +97,7 @@
         <rect x="92" y="72" width="16" height="18" rx="6" fill="url(#bodyGrad)" />
         <!-- head silhouette (no face) -->
         <ellipse cx="100" cy="60" rx="22" ry="26" fill="url(#bodyGrad)" />
-        <!-- subtle shoulder cape glow edge -->
+        <!-- shoulder cape glow edge -->
         <path d="M55 160 Q60 118 72 110 Q80 105 100 104 Q120 105 128 110 Q140 118 145 160"
               fill="none" stroke="rgba(95,185,255,0.25)" stroke-width="0.8" />
         <!-- head glow rim -->
@@ -159,7 +105,7 @@
                  stroke="rgba(95,185,255,0.2)" stroke-width="0.8" />
       </svg>
 
-      <!-- Level + total virtue overlay at bottom -->
+      <!-- Level + total virtue overlay -->
       <div class="hero-stats">
         <div>
           <div class="label" style="font-size:8px;">LEVEL</div>
@@ -179,11 +125,8 @@
     <div class="panel hud">
       <div class="radar-wrap">
         <svg viewBox="-160 -160 320 320" aria-label="Eight-virtue radar chart">
-          <defs>
-            <!-- axis guides -->
-          </defs>
 
-          <!-- concentric rings 25/50/75/100 (r*1.5 = 37.5/75/112.5/150) -->
+          <!-- concentric rings 25/50/75 (r*1.5 = 37.5/75/112.5) -->
           <g fill="none" stroke="rgba(148,168,200,0.1)" stroke-width="1">
             <polygon points="0,-37.5 26.52,-26.52 37.5,0 26.52,26.52 0,37.5 -26.52,26.52 -37.5,0 -26.52,-26.52" />
             <polygon points="0,-75 53.03,-53.03 75,0 53.03,53.03 0,75 -53.03,53.03 -75,0 -53.03,-53.03" />
@@ -192,7 +135,7 @@
 
           <!-- axis lines -->
           <g stroke="rgba(148,168,200,0.08)" stroke-width="1">
-            <line x1="0" y1="0" x2="0"      y2="-150" />
+            <line x1="0" y1="0" x2="0"       y2="-150" />
             <line x1="0" y1="0" x2="106.07"  y2="-106.07" />
             <line x1="0" y1="0" x2="150"     y2="0" />
             <line x1="0" y1="0" x2="106.07"  y2="106.07" />
@@ -207,34 +150,28 @@
             points="0,-150 106.07,-106.07 150,0 106.07,106.07 0,150 -106.07,106.07 -150,0 -106.07,-106.07"
             fill="none" stroke="rgba(148,168,200,0.25)" stroke-width="1" stroke-dasharray="2 3" />
 
-          <!-- stretch layer (+10 each value) -->
-          <!-- VRB70:(0,-105) LOG55:(58.34,-58.34) WIS80:(120,0) ART60:(63.64,63.64) VIT50:(0,75) VAL45:(-47.73,47.73) WIL85:(-127.5,0) HUM65:(-68.94,-68.94) -->
+          <!-- stretch layer: current values +10 each
+               VRB70:(0,-105) LOG55:(58.34,-58.34) WIS80:(120,0) ART60:(63.64,63.64)
+               VIT50:(0,75) VAL45:(-47.73,47.73) WIL85:(-127.5,0) HUM65:(-68.94,-68.94) -->
           <polygon
             points="0,-105 58.34,-58.34 120,0 63.64,63.64 0,75 -47.73,47.73 -127.5,0 -68.94,-68.94"
             fill="none" stroke="rgba(95,185,255,0.22)" stroke-width="1" stroke-dasharray="4 3" />
 
-          <!-- current values fill -->
-          <!-- VRB60:(0,-90) LOG45:(47.73,-47.73) WIS70:(105,0) ART50:(53.03,53.03) VIT40:(0,60) VAL35:(-37.12,37.12) WIL75:(-112.5,0) HUM55:(-58.34,-58.34) -->
+          <!-- current values fill
+               VRB60:(0,-90) LOG45:(47.73,-47.73) WIS70:(105,0) ART50:(53.03,53.03)
+               VIT40:(0,60) VAL35:(-37.12,37.12) WIL75:(-112.5,0) HUM55:(-58.34,-58.34) -->
           <polygon
             points="0,-90 47.73,-47.73 105,0 53.03,53.03 0,60 -37.12,37.12 -112.5,0 -58.34,-58.34"
             fill="rgba(95,185,255,0.25)" stroke="#5fb9ff" stroke-width="1.5" stroke-linejoin="round" />
 
           <!-- vertex dots (each virtue color) -->
-          <!-- VRB -->
-          <circle cx="0"      cy="-90"    r="3.5" fill="var(--v-vrb)" filter="url(#vdot)" />
-          <!-- LOG -->
+          <circle cx="0"      cy="-90"    r="3.5" fill="var(--v-vrb)" />
           <circle cx="47.73"  cy="-47.73" r="3.5" fill="var(--v-log)" />
-          <!-- WIS -->
           <circle cx="105"    cy="0"      r="3.5" fill="var(--v-wis)" />
-          <!-- ART -->
           <circle cx="53.03"  cy="53.03"  r="3.5" fill="var(--v-art)" />
-          <!-- VIT -->
           <circle cx="0"      cy="60"     r="3.5" fill="var(--v-vit)" />
-          <!-- VAL -->
           <circle cx="-37.12" cy="37.12"  r="3.5" fill="var(--v-val)" />
-          <!-- WIL -->
           <circle cx="-112.5" cy="0"      r="3.5" fill="var(--v-wil)" />
-          <!-- HUM -->
           <circle cx="-58.34" cy="-58.34" r="3.5" fill="var(--v-hum)" />
 
           <!-- labels: English code primary, kanji sub -->
@@ -265,7 +202,7 @@
         </svg>
       </div>
 
-      <!-- legend -->
+      <!-- radar legend -->
       <div class="row" style="justify-content:center; gap:14px; margin-top:6px; flex-wrap:wrap;">
         <span class="label" style="display:flex; align-items:center; gap:5px;">
           <span style="display:inline-block; width:10px; height:2px; background:var(--accent); border-radius:1px;"></span>CURRENT
