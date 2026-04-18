@@ -1,0 +1,258 @@
+/* Lifeight ・ モック共通スタイル */
+/* モバイル前提 / portrait first / 和紙 × 墨 */
+
+:root {
+  --bg: #f5efe4;
+  --surface: #fbf7ef;
+  --surface-sub: #f0e8d8;
+  --ink: #2a2520;
+  --ink-sub: #7d7265;
+  --ink-mute: #a89d8a;
+  --border: #d8cdbb;
+  --border-strong: #b8a98d;
+  --accent: #8b6f3f;
+
+  /* 八徳カラー（墨・若冲・和調のくすみ系） */
+  --v-vrb: #5a7fb8; /* 文 */
+  --v-log: #7a5a9c; /* 数 */
+  --v-wis: #6b8e5c; /* 観 */
+  --v-art: #c77a8a; /* 芸 */
+  --v-vit: #c56a55; /* 体 */
+  --v-val: #d89655; /* 勇 */
+  --v-wil: #b8964b; /* 志 */
+  --v-hum: #5a9c94; /* 仁 */
+
+  --radius: 14px;
+  --shadow: 0 1px 2px rgba(42, 37, 32, 0.06), 0 6px 20px rgba(42, 37, 32, 0.05);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", serif;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "palt";
+  line-height: 1.6;
+}
+
+/* 紙の質感 */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(rgba(180, 160, 120, 0.08) 1px, transparent 1px),
+    radial-gradient(rgba(180, 160, 120, 0.05) 1px, transparent 1px);
+  background-size: 3px 3px, 7px 7px;
+  background-position: 0 0, 1px 2px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app {
+  position: relative;
+  max-width: 420px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 16px 16px 96px;
+  z-index: 1;
+}
+
+/* ヘッダ */
+.app-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 8px 4px 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.app-header .brand {
+  font-size: 20px;
+  letter-spacing: 0.15em;
+  font-weight: 600;
+}
+.app-header .brand small {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--ink-sub);
+  margin-top: 2px;
+}
+.app-header .meta {
+  font-size: 11px;
+  color: var(--ink-sub);
+  letter-spacing: 0.1em;
+}
+
+/* セクション */
+.section {
+  margin: 20px 0;
+}
+.section-title {
+  font-size: 13px;
+  letter-spacing: 0.25em;
+  color: var(--ink-sub);
+  margin: 0 0 10px;
+  font-weight: 500;
+}
+.section-title::before {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 1px;
+  background: var(--border-strong);
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+/* カード */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+.card + .card { margin-top: 12px; }
+
+/* ボトムナビ */
+.bottom-nav {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 12px;
+  width: calc(100% - 24px);
+  max-width: 396px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 8px;
+  z-index: 10;
+}
+.bottom-nav a {
+  text-align: center;
+  text-decoration: none;
+  color: var(--ink-sub);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  padding: 8px 0;
+  border-radius: 999px;
+  transition: background 0.15s;
+}
+.bottom-nav a .icon {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 2px;
+  color: var(--ink);
+}
+.bottom-nav a.active {
+  background: var(--surface-sub);
+  color: var(--ink);
+}
+
+/* ボタン */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--ink);
+  color: var(--surface);
+  border: none;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: inherit;
+}
+.btn.ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--border-strong);
+}
+.btn.block { width: 100%; }
+
+/* 八徳バッジ */
+.virtue-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  background: var(--surface-sub);
+  color: var(--ink);
+}
+.virtue-chip .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.vc-vrb .dot { background: var(--v-vrb); }
+.vc-log .dot { background: var(--v-log); }
+.vc-wis .dot { background: var(--v-wis); }
+.vc-art .dot { background: var(--v-art); }
+.vc-vit .dot { background: var(--v-vit); }
+.vc-val .dot { background: var(--v-val); }
+.vc-wil .dot { background: var(--v-wil); }
+.vc-hum .dot { background: var(--v-hum); }
+
+/* 級段バッジ */
+.rank-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid var(--ink);
+  border-radius: 4px;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+}
+.rank-badge.dan {
+  background: var(--ink);
+  color: var(--surface);
+}
+
+/* 進捗バー */
+.bar {
+  height: 6px;
+  background: var(--surface-sub);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.bar > span {
+  display: block;
+  height: 100%;
+  background: var(--ink);
+  border-radius: 999px;
+}
+
+/* 引用・語り */
+.whisper {
+  color: var(--ink-sub);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  line-height: 1.7;
+  padding: 12px 14px;
+  border-left: 2px solid var(--border-strong);
+  background: rgba(251, 247, 239, 0.5);
+}
+
+/* ユーティリティ */
+.row { display: flex; align-items: center; gap: 10px; }
+.between { justify-content: space-between; }
+.mt-8 { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+.muted { color: var(--ink-sub); }
+.small { font-size: 12px; }
+.xsmall { font-size: 11px; letter-spacing: 0.1em; }

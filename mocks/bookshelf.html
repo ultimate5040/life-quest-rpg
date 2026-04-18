@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#f5efe4" />
+<title>Lifeight ・ 本棚</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  .shelf {
+    position: relative;
+    background: linear-gradient(180deg, #d8c49a 0%, #c4a97a 100%);
+    border-radius: 10px;
+    padding: 14px 10px 18px;
+    box-shadow: inset 0 -4px 0 rgba(0,0,0,0.12), var(--shadow);
+    margin-bottom: 14px;
+  }
+  .shelf::after {
+    content: "";
+    position: absolute;
+    left: 4px; right: 4px; bottom: 6px;
+    height: 4px;
+    background: rgba(60, 40, 20, 0.35);
+    border-radius: 2px;
+  }
+  .shelf-label {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: #4a3a24;
+    margin-bottom: 10px;
+    padding-left: 2px;
+  }
+  .books {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    align-items: end;
+  }
+  .book {
+    position: relative;
+    aspect-ratio: 1 / 2.6;
+    border-radius: 3px 3px 2px 2px;
+    color: #fbf7ef;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 10px 0 8px;
+    box-shadow: 1px 0 0 rgba(0,0,0,0.15) inset, -1px 0 0 rgba(255,255,255,0.08) inset;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .book:active { transform: translateY(2px); }
+  .book .rank {
+    writing-mode: horizontal-tb;
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    padding: 1px 4px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 2px;
+  }
+  .book.new::before {
+    content: "新";
+    writing-mode: horizontal-tb;
+    position: absolute;
+    top: 4px; right: 4px;
+    font-size: 8px;
+    background: var(--v-val);
+    color: #fff;
+    border-radius: 50%;
+    width: 14px; height: 14px;
+    display: flex; align-items: center; justify-content: center;
+    letter-spacing: 0;
+  }
+  /* 書の色 ・ 徳の属性 */
+  .book.b-wil { background: linear-gradient(180deg,#b8964b,#8a6f34); }
+  .book.b-wis { background: linear-gradient(180deg,#6b8e5c,#4a6840); }
+  .book.b-vrb { background: linear-gradient(180deg,#5a7fb8,#3e5c8a); }
+  .book.b-log { background: linear-gradient(180deg,#7a5a9c,#553c75); }
+  .book.b-art { background: linear-gradient(180deg,#c77a8a,#9a5564); }
+  .book.b-vit { background: linear-gradient(180deg,#c56a55,#8f4a3a); }
+  .book.b-val { background: linear-gradient(180deg,#d89655,#a06b34); }
+  .book.b-hum { background: linear-gradient(180deg,#5a9c94,#3e706a); }
+
+  /* 影の書 (未発見) */
+  .book.shadow {
+    background: repeating-linear-gradient(135deg, #7d6a4a, #7d6a4a 3px, #8a7757 3px, #8a7757 6px);
+    color: #3a2d18;
+    font-weight: 600;
+  }
+  .book.shadow .rank { background: transparent; }
+
+  /* 空き枠 */
+  .book.empty {
+    background: rgba(0,0,0,0.15);
+    border: 1px dashed rgba(40,30,15,0.35);
+    box-shadow: none;
+  }
+
+  .filter-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+    overflow-x: auto;
+  }
+  .filter-tabs button {
+    flex: 0 0 auto;
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--ink-sub);
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .filter-tabs button.on {
+    background: var(--ink);
+    color: var(--surface);
+    border-color: var(--ink);
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="app-header">
+    <div class="brand">
+      本棚
+      <small>BOOKSHELF</small>
+    </div>
+    <div class="meta">
+      蔵書 7 / 48<br />
+      <span class="muted">棚の拡張 ・ 3段目</span>
+    </div>
+  </header>
+
+  <!-- フィルタ -->
+  <div class="filter-tabs">
+    <button class="on">すべて</button>
+    <button>基幹編</button>
+    <button>世界の書</button>
+    <button>季節の書</button>
+    <button>開いている</button>
+    <button>影</button>
+  </div>
+
+  <!-- 棚 1 : 基幹編 -->
+  <div class="shelf">
+    <div class="shelf-label">基 幹 編</div>
+    <div class="books">
+      <div class="book b-wil" title="片付け編">
+        片付け編
+        <span class="rank">9級</span>
+      </div>
+      <div class="book b-vrb" title="学習編">
+        学習編
+        <span class="rank">10級</span>
+      </div>
+      <div class="book shadow" title="未発見">
+        ？ ？ ？
+        <span class="rank">生活</span>
+      </div>
+      <div class="book shadow" title="未発見">
+        ？ ？ ？
+        <span class="rank">金銭</span>
+      </div>
+      <div class="book shadow" title="未発見">
+        ？ ？ ？
+        <span class="rank">対人</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 棚 2 : 世界の書 -->
+  <div class="shelf">
+    <div class="shelf-label">世 界 の 書</div>
+    <div class="books">
+      <div class="book b-wis new" title="観葉植物の書">
+        観葉植物
+        <span class="rank">10級</span>
+      </div>
+      <div class="book b-art" title="作曲の書">
+        作曲の書
+        <span class="rank">10級</span>
+      </div>
+      <div class="book b-log" title="天文の書">
+        天文の書
+        <span class="rank">影</span>
+      </div>
+      <div class="book shadow" title="未発見">？ ？ ？<span class="rank">登山</span></div>
+      <div class="book shadow" title="未発見">？ ？ ？<span class="rank">投資</span></div>
+    </div>
+  </div>
+
+  <!-- 棚 3 : 季節の書 -->
+  <div class="shelf">
+    <div class="shelf-label">季 節 の 書 ・ 春</div>
+    <div class="books">
+      <div class="book b-wis new" title="植栽の書 ・ 春">
+        植栽の書
+        <span class="rank">開</span>
+      </div>
+      <div class="book shadow" title="夏に開く">？<span class="rank">夏</span></div>
+      <div class="book shadow" title="秋に開く">？<span class="rank">秋</span></div>
+      <div class="book shadow" title="冬に開く">？<span class="rank">冬</span></div>
+      <div class="book empty"></div>
+    </div>
+  </div>
+
+  <!-- 棚 4 : 緊急書 -->
+  <div class="shelf">
+    <div class="shelf-label">迷 え る 者 の た め に</div>
+    <div class="books">
+      <div class="book b-hum" title="心の避難所">
+        心の家
+        <span class="rank">常設</span>
+      </div>
+      <div class="book empty"></div>
+      <div class="book empty"></div>
+      <div class="book empty"></div>
+      <div class="book empty"></div>
+    </div>
+  </div>
+
+  <!-- 書の詳細プレビュー -->
+  <section class="section">
+    <h2 class="section-title">選択中の書</h2>
+    <div class="card">
+      <div class="row between">
+        <div>
+          <div style="letter-spacing:0.1em; font-size:16px;">片付け編</div>
+          <div class="xsmall muted mt-8">基幹編 ・ 10級 → 初段</div>
+        </div>
+        <span class="rank-badge">9 級</span>
+      </div>
+
+      <div class="row mt-12" style="gap:6px; flex-wrap:wrap;">
+        <span class="virtue-chip vc-wil"><span class="dot"></span>志（主）</span>
+        <span class="virtue-chip vc-wis"><span class="dot"></span>観（副）</span>
+      </div>
+
+      <p class="small mt-12" style="color:var(--ink-sub);">
+        空間を整えることは、心を整えること。<br />
+        30秒からでいい。床の一角から、世界は始まる。
+      </p>
+
+      <div class="row mt-16" style="gap:8px;">
+        <a href="cleanup.html" class="btn block">続きを開く</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 書と書の糸 -->
+  <section class="section">
+    <h2 class="section-title">この書から続く道</h2>
+    <div class="card">
+      <ul style="list-style:none; padding:0; margin:0; font-size:12px; letter-spacing:0.05em;">
+        <li class="row" style="gap:8px; padding:6px 0;">
+          <span class="muted xsmall">5級 達成で →</span>
+          <span>書斎編</span>
+        </li>
+        <li class="row" style="gap:8px; padding:6px 0; border-top:1px dashed var(--border);">
+          <span class="muted xsmall">初段 到達で →</span>
+          <span>家事編 ・ 料理の書</span>
+        </li>
+        <li class="row" style="gap:8px; padding:6px 0; border-top:1px dashed var(--border);">
+          <span class="muted xsmall">三段 到達で →</span>
+          <span>空間設計の書（UNLOCK：いつでも来客を招ける）</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="whisper mt-16">
+    「棚に影が多いのは、恥ではない。<br />
+    　知らない世界の、多さの証だ。」
+  </div>
+
+</main>
+
+<nav class="bottom-nav">
+  <a href="index.html"><span class="icon">書</span>今日</a>
+  <a href="status.html"><span class="icon">徳</span>勇者</a>
+  <a href="bookshelf.html" class="active"><span class="icon">棚</span>本棚</a>
+  <a href="#"><span class="icon">∞</span>軌跡</a>
+</nav>
+</body>
+</html>
