@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "extraKnownMarketplaces": {
+    "chrome-devtools-mcp": {
+      "source": {
+        "source": "github",
+        "repo": "ChromeDevTools/chrome-devtools-mcp"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "chrome-devtools-mcp@chrome-devtools-mcp": true
+  }
+}
