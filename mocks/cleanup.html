@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#f5efe4" />
+<title>Lifeight ・ 片付け編</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  /* 級段トラック */
+  .track {
+    position: relative;
+    margin: 8px 0 4px;
+    padding: 12px 0 4px;
+  }
+  .track-line {
+    position: absolute;
+    left: 6%; right: 6%;
+    top: 26px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--ink) 0%, var(--ink) 62%, var(--border-strong) 62%, var(--border-strong) 100%);
+  }
+  .track-steps {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    gap: 0;
+  }
+  .step {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--ink-sub);
+  }
+  .step .node {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--border-strong);
+    margin-bottom: 6px;
+  }
+  .step.done .node {
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+  .step.current .node {
+    background: var(--v-val);
+    border-color: var(--v-val);
+    box-shadow: 0 0 0 4px rgba(216, 150, 85, 0.2);
+  }
+  .step.dan .node {
+    border-radius: 2px;
+    transform: rotate(45deg);
+  }
+  .step.current .label { color: var(--ink); font-weight: 600; }
+
+  .quest {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    background: var(--surface);
+    margin-bottom: 8px;
+  }
+  .quest.done {
+    background: var(--surface-sub);
+    opacity: 0.75;
+  }
+  .quest .title {
+    letter-spacing: 0.05em;
+    font-size: 14px;
+  }
+  .quest.done .title {
+    text-decoration: line-through;
+    text-decoration-color: var(--ink-mute);
+  }
+  .quest .meta {
+    font-size: 10px;
+    color: var(--ink-sub);
+    letter-spacing: 0.15em;
+    margin-top: 4px;
+  }
+
+  .check {
+    width: 20px; height: 20px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 6px;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: transparent;
+  }
+  .quest.done .check {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--surface);
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="app-header">
+    <div class="brand">
+      片付け編
+      <small>CLEANUP ・ 基幹編</small>
+    </div>
+    <div class="meta">
+      <span class="rank-badge">9 級</span><br />
+      <span class="muted">開封 ・ 22日目</span>
+    </div>
+  </header>
+
+  <!-- 級段トラック -->
+  <section class="section">
+    <h2 class="section-title">級 → 段</h2>
+    <div class="track">
+      <div class="track-line"></div>
+      <div class="track-steps">
+        <div class="step done"><span class="node"></span><span class="label">10級</span></div>
+        <div class="step current"><span class="node"></span><span class="label">9級</span></div>
+        <div class="step"><span class="node"></span><span class="label">8級</span></div>
+        <div class="step"><span class="node"></span><span class="label">7級</span></div>
+        <div class="step"><span class="node"></span><span class="label">6級</span></div>
+        <div class="step"><span class="node"></span><span class="label">5級</span></div>
+        <div class="step"><span class="node"></span><span class="label">4級</span></div>
+        <div class="step"><span class="node"></span><span class="label">3級</span></div>
+        <div class="step"><span class="node"></span><span class="label">2級</span></div>
+        <div class="step"><span class="node"></span><span class="label">1級</span></div>
+        <div class="step dan"><span class="node"></span><span class="label">初段</span></div>
+      </div>
+    </div>
+
+    <div class="card mt-16">
+      <div class="row between">
+        <div>
+          <div class="xsmall muted">現在 ・ 9 級</div>
+          <div style="letter-spacing:0.05em; margin-top:2px;">机の上・椅子の上を空にする</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="xsmall muted">次：8 級</div>
+          <div class="xsmall">床を5分で整える</div>
+        </div>
+      </div>
+      <div class="bar mt-12"><span style="width:62%; background:var(--v-val);"></span></div>
+      <div class="row between mt-8">
+        <span class="xsmall muted">徳 EXP</span>
+        <span class="xsmall muted">62 / 100</span>
+      </div>
+
+      <div class="row mt-12" style="gap:6px;">
+        <span class="virtue-chip vc-wil"><span class="dot"></span>志（主）</span>
+        <span class="virtue-chip vc-wis"><span class="dot"></span>観（副）</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 今日のクエスト -->
+  <section class="section">
+    <h2 class="section-title">今日のクエスト</h2>
+
+    <label class="quest done" style="display:flex; align-items:center; gap:12px;">
+      <span class="check">✓</span>
+      <div style="flex:1;">
+        <div class="title">目覚めてすぐ、布団を整える</div>
+        <div class="meta">志 +4 ・ 観 +1 ・ 06:42 完了</div>
+      </div>
+    </label>
+
+    <label class="quest" style="display:flex; align-items:center; gap:12px;">
+      <span class="check"></span>
+      <div style="flex:1;">
+        <div class="title">机の上を、30秒だけ整える</div>
+        <div class="meta">志 +12 ・ 観 +4 ・ 推奨 18 時台</div>
+      </div>
+    </label>
+
+    <label class="quest" style="display:flex; align-items:center; gap:12px;">
+      <span class="check"></span>
+      <div style="flex:1;">
+        <div class="title">椅子の上の服を、ハンガーへ</div>
+        <div class="meta">志 +6 ・ 観 +2</div>
+      </div>
+    </label>
+
+    <label class="quest" style="display:flex; align-items:center; gap:12px;">
+      <span class="check"></span>
+      <div style="flex:1;">
+        <div class="title">使ったカップを、寝る前に洗う</div>
+        <div class="meta">志 +5 ・ 観 +1 ・ 夜のクエスト</div>
+      </div>
+    </label>
+  </section>
+
+  <!-- 8級への条件 -->
+  <section class="section">
+    <h2 class="section-title">8 級への条件</h2>
+    <div class="card">
+      <ul style="list-style:none; padding:0; margin:0; font-size:13px; letter-spacing:0.05em;">
+        <li class="row between" style="padding:8px 0;">
+          <span>机・椅子の上を 7 日連続で 0 にする</span>
+          <span class="xsmall muted">4 / 7</span>
+        </li>
+        <li class="row between" style="padding:8px 0; border-top:1px dashed var(--border);">
+          <span>床にモノを置かない日を 10 日</span>
+          <span class="xsmall muted">6 / 10</span>
+        </li>
+        <li class="row between" style="padding:8px 0; border-top:1px dashed var(--border);">
+          <span>夜、使ったものを元の場所へ</span>
+          <span class="xsmall muted">12 / 14</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 8級到達のごほうび -->
+  <section class="section">
+    <h2 class="section-title">8 級 到達で手に入るもの</h2>
+    <div class="card">
+      <div class="row" style="gap:12px; align-items:center;">
+        <div style="width:56px; height:56px; border-radius:10px; background:linear-gradient(135deg,#b8964b,#8a6f34); display:flex; align-items:center; justify-content:center; color:#fbf7ef; font-size:22px; letter-spacing:0.1em;">箒</div>
+        <div>
+          <div style="letter-spacing:0.08em;">整えの箒（武器）</div>
+          <div class="xsmall muted mt-8">装備すると、朝のクエストが +10% 効率化</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="row" style="gap:12px; align-items:center;">
+        <div style="width:56px; height:56px; border-radius:10px; background:linear-gradient(135deg,#efe5d0,#c4a97a); display:flex; align-items:center; justify-content:center; color:#4a3a24; letter-spacing:0.1em;">書斎</div>
+        <div>
+          <div style="letter-spacing:0.08em;">整然とした書斎（背景）</div>
+          <div class="xsmall muted mt-8">勇者の背景が切り替わる</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 戻ってきた者へ -->
+  <section class="section">
+    <div class="whisper" style="border-color:var(--v-val);">
+      「昨日、進めなくてもいい。<br />
+      　明日、また一節だけ。<br />
+      　戻ってきた君を、讃える。」
+    </div>
+  </section>
+
+  <!-- 証跡 -->
+  <section class="section">
+    <h2 class="section-title">級 → 段 の 証</h2>
+    <div class="card">
+      <p class="small muted" style="margin:0 0 10px;">
+        級は自己申告でいい。段は、写真を1枚。
+      </p>
+      <div class="row" style="gap:8px;">
+        <button class="btn block">写真で記録する</button>
+        <button class="btn ghost">あとで</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<nav class="bottom-nav">
+  <a href="index.html"><span class="icon">書</span>今日</a>
+  <a href="status.html"><span class="icon">徳</span>勇者</a>
+  <a href="bookshelf.html" class="active"><span class="icon">棚</span>本棚</a>
+  <a href="#"><span class="icon">∞</span>軌跡</a>
+</nav>
+</body>
+</html>
