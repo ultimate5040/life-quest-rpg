@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#1a1325" />
+<title>Lifeight v0.1 ・ 片付け編</title>
+<style>
+  :root {
+    --bg: #1a1325;
+    --bg-elev: #241a35;
+    --bg-card: #2d2142;
+    --ink: #f3ecff;
+    --ink-dim: #b6a8d6;
+    --ink-muted: #7c6f99;
+    --accent: #ffcf5c;
+    --accent-soft: #ffcf5c33;
+    --line: #3d2f57;
+    --good: #7ddc9c;
+    --radar: #ffcf5c;
+    --radar-fill: #ffcf5c40;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+    font-feature-settings: "palt"; line-height: 1.5; }
+  body { min-height: 100dvh; padding: env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 16px); }
+  .app { max-width: 480px; margin: 0 auto; padding: 16px; }
+
+  header.hero { text-align: center; padding: 8px 0 16px; }
+  .brand { font-size: 13px; letter-spacing: .3em; color: var(--ink-muted); margin: 0; }
+  .tagline { font-size: 14px; color: var(--ink-dim); margin: 6px 0 0; }
+
+  .rank-card { background: linear-gradient(160deg, var(--bg-card), var(--bg-elev));
+    border: 1px solid var(--line); border-radius: 18px; padding: 18px; margin-top: 12px; }
+  .rank-row { display: flex; align-items: baseline; gap: 12px; }
+  .rank-label { font-size: 12px; color: var(--ink-muted); letter-spacing: .2em; }
+  .rank-value { font-size: 40px; font-weight: 700; color: var(--accent); line-height: 1; }
+  .rank-name { font-size: 14px; color: var(--ink-dim); margin-left: auto; }
+  .rank-bar { margin-top: 14px; height: 8px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+  .rank-bar > span { display: block; height: 100%; background: var(--accent); transition: width .4s ease; }
+  .rank-meta { display: flex; justify-content: space-between; margin-top: 8px;
+    font-size: 12px; color: var(--ink-muted); }
+
+  section { margin-top: 18px; }
+  h2 { font-size: 14px; letter-spacing: .2em; color: var(--ink-muted);
+    margin: 0 0 10px; font-weight: 600; }
+
+  .radar-wrap { background: var(--bg-card); border: 1px solid var(--line);
+    border-radius: 18px; padding: 8px; }
+  .radar-wrap svg { display: block; width: 100%; height: auto; }
+
+  .quest-list { display: flex; flex-direction: column; gap: 8px; }
+  .quest { display: flex; align-items: center; gap: 12px; padding: 14px 14px;
+    background: var(--bg-card); border: 1px solid var(--line); border-radius: 14px;
+    cursor: pointer; user-select: none; min-height: 56px;
+    transition: background .15s ease, border-color .15s ease, transform .1s ease; }
+  .quest:active { transform: scale(.985); }
+  .quest .check { width: 24px; height: 24px; border-radius: 8px;
+    border: 2px solid var(--ink-muted); display: grid; place-items: center;
+    flex: 0 0 auto; transition: all .15s ease; }
+  .quest .check::after { content: ""; width: 10px; height: 10px; border-radius: 4px;
+    background: transparent; transition: background .15s ease; }
+  .quest.done { background: #2a3a2c; border-color: #4a6b4d; }
+  .quest.done .check { border-color: var(--good); }
+  .quest.done .check::after { background: var(--good); }
+  .quest .body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .quest .title { font-size: 15px; }
+  .quest .tags { font-size: 11px; color: var(--ink-muted); letter-spacing: .1em; }
+  .quest.done .title { color: var(--ink-dim); text-decoration: line-through; text-decoration-color: var(--ink-muted); }
+
+  .send-out { margin-top: 22px; padding: 18px; border-radius: 18px;
+    background: var(--accent-soft); border: 1px dashed var(--accent);
+    text-align: center; color: var(--ink); }
+  .send-out p { margin: 0 0 10px; font-size: 14px; color: var(--ink-dim); }
+  .send-out button { background: var(--accent); color: #1a1325; border: 0;
+    padding: 14px 24px; border-radius: 999px; font-size: 15px; font-weight: 700;
+    cursor: pointer; min-height: 48px; }
+  .send-out button:active { transform: scale(.97); }
+
+  .welcome { background: #2a3a4d; border: 1px solid #4d6b8a; border-radius: 14px;
+    padding: 14px 16px; margin-top: 12px; font-size: 14px; color: #cfe2ff; }
+  .welcome strong { color: #ffd; }
+
+  footer { text-align: center; margin-top: 24px; font-size: 11px;
+    color: var(--ink-muted); letter-spacing: .15em; }
+
+  .virtues { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; }
+  .virtue { background: var(--bg-card); border: 1px solid var(--line);
+    border-radius: 10px; padding: 8px 6px; text-align: center; }
+  .virtue .code { font-size: 10px; color: var(--ink-muted); letter-spacing: .15em; }
+  .virtue .kanji { font-size: 14px; color: var(--ink); margin-top: 2px; }
+  .virtue .lv { font-size: 16px; color: var(--accent); font-weight: 700; margin-top: 2px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="hero">
+    <p class="brand">L I F E I G H T</p>
+    <p class="tagline">勇者 × 本棚 × 八徳</p>
+  </header>
+
+  <div id="welcome" class="welcome" hidden></div>
+
+  <div class="rank-card">
+    <div class="rank-row">
+      <span class="rank-label">現在の級</span>
+      <span class="rank-value" id="rank-value">10</span>
+      <span class="rank-name" id="rank-name">片付け 入門</span>
+    </div>
+    <div class="rank-bar"><span id="rank-bar"></span></div>
+    <div class="rank-meta">
+      <span id="rank-progress">0 / 3 日</span>
+      <span id="rank-next">次：9級</span>
+    </div>
+  </div>
+
+  <section>
+    <h2>八徳</h2>
+    <div class="radar-wrap">
+      <svg id="radar" viewBox="-110 -110 220 220" aria-label="八徳レーダーチャート"></svg>
+    </div>
+    <div class="virtues" id="virtues"></div>
+  </section>
+
+  <section>
+    <h2>今日のクエスト</h2>
+    <div class="quest-list" id="quests"></div>
+  </section>
+
+  <div class="send-out">
+    <p>今日はここまで。本を閉じて、現実へ。</p>
+    <button id="close-book">本を閉じる</button>
+  </div>
+
+  <footer>戻った者を讃えよ ・ 昨日の自分と比べよ ・ 現実へ送り出せ</footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const STORAGE_KEY = "lifeight.v0.1";
+
+  const VIRTUES = [
+    { code: "VRB", kanji: "文" },
+    { code: "LOG", kanji: "数" },
+    { code: "WIS", kanji: "観" },
+    { code: "ART", kanji: "芸" },
+    { code: "VIT", kanji: "体" },
+    { code: "VAL", kanji: "勇" },
+    { code: "WIL", kanji: "志" },
+    { code: "HUM", kanji: "仁" },
+  ];
+
+  const RANKS = {
+    10: {
+      name: "片付け 入門",
+      promoteDays: 3,
+      quests: [
+        { id: "desk3",   title: "机の上を3分片付ける", grants: { WIS: 2, WIL: 1 } },
+        { id: "trash5",  title: "ゴミを5個捨てる",     grants: { VIT: 1, WIS: 1 } },
+        { id: "chair",   title: "椅子をきちんとしまう", grants: { HUM: 1, WIL: 1 } },
+      ],
+    },
+    9: {
+      name: "片付け 初級",
+      promoteDays: 4,
+      quests: [
+        { id: "floor3",  title: "床の物を3つ元の場所へ", grants: { WIS: 2, VIT: 1 } },
+        { id: "drawer1", title: "引き出しを1段だけ整理", grants: { LOG: 2, WIS: 1 } },
+        { id: "books5",  title: "本を5冊そろえて並べる", grants: { VRB: 2, ART: 1 } },
+        { id: "wipe1",   title: "1ヶ所だけ拭き掃除",     grants: { VIT: 2, WIL: 1 } },
+      ],
+    },
+    8: {
+      name: "片付け 中級",
+      promoteDays: 5,
+      quests: [
+        { id: "shoes",   title: "玄関の靴をそろえる",       grants: { HUM: 2, WIL: 1 } },
+        { id: "sink",    title: "洗面台を拭く",             grants: { VIT: 2, HUM: 1 } },
+        { id: "drawerA", title: "机の引き出しを全部見直す", grants: { LOG: 2, WIS: 2 } },
+        { id: "donate",  title: "使わない物を1つ手放す",     grants: { VAL: 2, WIL: 1 } },
+        { id: "plan",    title: "明日の机の状態を絵で描く",   grants: { ART: 2, VRB: 1 } },
+      ],
+    },
+  };
+
+  const todayKey = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  };
+
+  const daysBetween = (a, b) => {
+    const [y1,m1,d1] = a.split("-").map(Number);
+    const [y2,m2,d2] = b.split("-").map(Number);
+    const t1 = Date.UTC(y1, m1-1, d1);
+    const t2 = Date.UTC(y2, m2-1, d2);
+    return Math.round((t2 - t1) / 86400000);
+  };
+
+  const defaultState = () => ({
+    rank: 10,
+    virtues: Object.fromEntries(VIRTUES.map(v => [v.code, 0])),
+    completedDays: [],
+    today: { date: todayKey(), done: [] },
+    lastSeen: todayKey(),
+  });
+
+  const load = () => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return defaultState();
+      const s = JSON.parse(raw);
+      if (s.today?.date !== todayKey()) {
+        s.today = { date: todayKey(), done: [] };
+      }
+      for (const v of VIRTUES) if (s.virtues[v.code] == null) s.virtues[v.code] = 0;
+      return s;
+    } catch {
+      return defaultState();
+    }
+  };
+
+  const save = (s) => localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+
+  let state = load();
+
+  const showWelcomeIfReturning = () => {
+    const gap = daysBetween(state.lastSeen, todayKey());
+    const el = document.getElementById("welcome");
+    if (gap >= 2) {
+      el.hidden = false;
+      el.innerHTML = `<strong>おかえり。</strong>${gap}日ぶり。減点はないよ。今日できる1つから。`;
+    } else {
+      el.hidden = true;
+    }
+    state.lastSeen = todayKey();
+  };
+
+  const renderRank = () => {
+    const r = RANKS[state.rank];
+    document.getElementById("rank-value").textContent = state.rank;
+    document.getElementById("rank-name").textContent = r.name;
+    const progress = state.completedDays.filter(d => d.rank === state.rank).length;
+    const need = r.promoteDays;
+    document.getElementById("rank-progress").textContent = `${Math.min(progress, need)} / ${need} 日`;
+    const next = state.rank - 1;
+    document.getElementById("rank-next").textContent =
+      RANKS[next] ? `次：${next}級` : "最終級";
+    document.getElementById("rank-bar").style.width =
+      `${Math.min(100, (progress / need) * 100)}%`;
+  };
+
+  const renderVirtues = () => {
+    const wrap = document.getElementById("virtues");
+    wrap.innerHTML = VIRTUES.map(v => `
+      <div class="virtue">
+        <div class="code">${v.code}</div>
+        <div class="kanji">${v.kanji}</div>
+        <div class="lv">${state.virtues[v.code]}</div>
+      </div>
+    `).join("");
+  };
+
+  const renderRadar = () => {
+    const svg = document.getElementById("radar");
+    const R = 90;
+    const N = VIRTUES.length;
+    const max = Math.max(10, ...VIRTUES.map(v => state.virtues[v.code]));
+
+    const point = (i, ratio) => {
+      const a = (Math.PI * 2 * i) / N - Math.PI / 2;
+      return [Math.cos(a) * R * ratio, Math.sin(a) * R * ratio];
+    };
+
+    let parts = "";
+    [0.25, 0.5, 0.75, 1].forEach(r => {
+      const pts = Array.from({length: N}, (_, i) => point(i, r).join(",")).join(" ");
+      parts += `<polygon points="${pts}" fill="none" stroke="#3d2f57" stroke-width="1"/>`;
+    });
+    for (let i = 0; i < N; i++) {
+      const [x, y] = point(i, 1);
+      parts += `<line x1="0" y1="0" x2="${x}" y2="${y}" stroke="#3d2f57" stroke-width="1"/>`;
+    }
+    const valuePts = VIRTUES.map((v, i) => {
+      const ratio = state.virtues[v.code] / max;
+      return point(i, ratio).join(",");
+    }).join(" ");
+    parts += `<polygon points="${valuePts}" fill="var(--radar-fill)" stroke="var(--radar)" stroke-width="2"/>`;
+    VIRTUES.forEach((v, i) => {
+      const [x, y] = point(i, 1.18);
+      parts += `<text x="${x}" y="${y}" fill="#b6a8d6" font-size="11" text-anchor="middle" dominant-baseline="middle">${v.kanji}</text>`;
+    });
+    svg.innerHTML = parts;
+  };
+
+  const renderQuests = () => {
+    const wrap = document.getElementById("quests");
+    const r = RANKS[state.rank];
+    wrap.innerHTML = r.quests.map(q => {
+      const done = state.today.done.includes(q.id);
+      const tags = Object.entries(q.grants).map(([k,v]) => `${k}+${v}`).join(" ・ ");
+      return `
+        <div class="quest ${done ? "done" : ""}" data-id="${q.id}">
+          <div class="check"></div>
+          <div class="body">
+            <div class="title">${q.title}</div>
+            <div class="tags">${tags}</div>
+          </div>
+        </div>
+      `;
+    }).join("");
+    wrap.querySelectorAll(".quest").forEach(el => {
+      el.addEventListener("click", () => toggleQuest(el.dataset.id));
+    });
+  };
+
+  const toggleQuest = (id) => {
+    const r = RANKS[state.rank];
+    const quest = r.quests.find(q => q.id === id);
+    if (!quest) return;
+    const i = state.today.done.indexOf(id);
+    if (i >= 0) {
+      state.today.done.splice(i, 1);
+      for (const [k, v] of Object.entries(quest.grants)) state.virtues[k] = Math.max(0, state.virtues[k] - v);
+    } else {
+      state.today.done.push(id);
+      for (const [k, v] of Object.entries(quest.grants)) state.virtues[k] = (state.virtues[k] || 0) + v;
+    }
+    save(state);
+    renderAll();
+  };
+
+  const closeBook = () => {
+    const r = RANKS[state.rank];
+    const allDone = r.quests.every(q => state.today.done.includes(q.id));
+    if (allDone) {
+      const already = state.completedDays.find(d => d.date === state.today.date);
+      if (!already) {
+        state.completedDays.push({ date: state.today.date, rank: state.rank });
+      }
+      const progress = state.completedDays.filter(d => d.rank === state.rank).length;
+      if (progress >= r.promoteDays && RANKS[state.rank - 1]) {
+        state.rank -= 1;
+        alert(`昇級！ ${state.rank + 1}級 → ${state.rank}級「${RANKS[state.rank].name}」`);
+      } else {
+        alert(`今日のぶん、よくやった。\n外の世界へ、いってらっしゃい。`);
+      }
+    } else {
+      alert(`いってらっしゃい。\n途中でも大丈夫。明日また会おう。`);
+    }
+    save(state);
+    renderAll();
+  };
+
+  const renderAll = () => {
+    renderRank();
+    renderVirtues();
+    renderRadar();
+    renderQuests();
+  };
+
+  document.getElementById("close-book").addEventListener("click", closeBook);
+  showWelcomeIfReturning();
+  save(state);
+  renderAll();
+})();
+</script>
+</body>
+</html>

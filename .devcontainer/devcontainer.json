@@ -1,16 +1,19 @@
 {
-  "name": "Claude Code Dev",
+  "name": "Lifeight Dev",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
   "forwardPorts": [3000, 5173, 8080],
   "portsAttributes": {
-    "3000": { "label": "App", "onAutoForward": "notify" },
-    "5173": { "label": "Vite", "onAutoForward": "notify" },
-    "8080": { "label": "Alt", "onAutoForward": "notify" }
+    "3000": { "label": "App",      "onAutoForward": "notify" },
+    "5173": { "label": "Vite",     "onAutoForward": "notify" },
+    "8080": { "label": "Lifeight", "onAutoForward": "openBrowser" }
   },
-  "postCreateCommand": "npm install -g @anthropic-ai/claude-code",
+  "postCreateCommand": "bash .devcontainer/postCreate.sh",
+  "containerEnv": {
+    "PUPPETEER_CACHE_DIR": "/home/node/.cache/puppeteer"
+  },
   "customizations": {
     "vscode": {
       "extensions": [
