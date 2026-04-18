@@ -1,0 +1,9 @@
+{
+  "name": "lifeight",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Lifeight v0.1 — 人生RPG型・成長検定アプリ",
+  "scripts": {
+    "dev": "python3 -m http.server 8080 --bind 0.0.0.0"
+  }
+}

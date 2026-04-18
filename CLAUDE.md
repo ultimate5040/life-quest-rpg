@@ -30,6 +30,10 @@ v0.1：片付け編（10〜8級）の HTML プロトタイプ
 UI変更後は Chrome DevTools MCP でスクショを撮って視覚検証する。
 a11y・パフォーマンスは Lighthouse（MCP標準機能）で監査。
 
+開発サーバ：`npm run dev` → http://localhost:8080
+（DevContainerのpostCreateで Chromium依存ライブラリ・日本語フォント・
+chrome-devtools-mcp が自動セットアップされる）
+
 ## 迷ったら
 - 機能仕様は企画書MDを参照
 - 上記3原則と矛盾する設計はしない
